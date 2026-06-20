@@ -3,6 +3,9 @@
 BookIt is a full-stack live-event booking platform built with Next.js,
 Express, and PostgreSQL.
 
+- Frontend: Next.js with TypeScript
+- Backend: Express with JavaScript (CommonJS)
+
 ## Project structure
 
 ```text
@@ -15,8 +18,8 @@ booking-app/
 
 ## Prerequisites
 
-- Node.js 18.18 or newer
-- npm 9 or newer
+- Node.js 24 or newer
+- npm 11 or newer
 - Docker Desktop or another Docker Compose-compatible runtime
 
 ## Local setup
@@ -61,3 +64,17 @@ npm run typecheck
 
 Database migrations and seed commands will be added with the database schema
 milestone.
+
+## Postman
+
+Import these two files into Postman:
+
+- `postman/BookIt.postman_collection.json`
+- `postman/BookIt.local.postman_environment.json`
+
+Select the **BookIt Local** environment before sending requests. Postman will
+store the authentication cookie after signup or login and send it with
+protected requests automatically.
+
+The health endpoint is currently available. The remaining requests document
+the required API surface and will become usable as each feature is implemented.

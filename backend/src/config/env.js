@@ -1,6 +1,6 @@
-import "dotenv/config";
+require("dotenv").config();
 
-function getPort(value: string | undefined): number {
+function getPort(value) {
   const port = Number(value ?? 4000);
 
   if (!Number.isInteger(port) || port <= 0) {
@@ -10,8 +10,10 @@ function getPort(value: string | undefined): number {
   return port;
 }
 
-export const env = {
+const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: getPort(process.env.PORT),
   frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000"
 };
+
+module.exports = { env };

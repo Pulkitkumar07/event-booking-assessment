@@ -1,9 +1,9 @@
-import cors from "cors";
-import express from "express";
-import helmet from "helmet";
-import { env } from "./config/env";
+const cors = require("cors");
+const express = require("express");
+const helmet = require("helmet");
+const { env } = require("./config/env");
 
-export const app = express();
+const app = express();
 
 app.use(helmet());
 app.use(
@@ -28,3 +28,5 @@ app.use((_request, response) => {
     }
   });
 });
+
+module.exports = { app };
