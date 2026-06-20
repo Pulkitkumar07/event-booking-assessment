@@ -1,0 +1,25 @@
+{
+  "name": "bookit",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,green \"npm run dev --workspace frontend\" \"npm run dev --workspace backend\"",
+    "build": "npm run build --workspace frontend && npm run build --workspace backend",
+    "lint": "npm run lint --workspace frontend && npm run lint --workspace backend",
+    "typecheck": "npm run typecheck --workspace frontend && npm run typecheck --workspace backend"
+  },
+  "devDependencies": {
+    "concurrently": "8.2.2"
+  },
+  "overrides": {
+    "path-to-regexp": "0.1.13",
+    "postcss": "8.5.10"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

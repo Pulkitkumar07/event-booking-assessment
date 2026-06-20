@@ -1,0 +1,30 @@
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
+import { env } from "./config/env";
+
+export const app = express();
+
+app.use(helmet());
+app.use(
+  cors({
+    origin: env.frontendUrl,
+    credentials: true
+  })
+);
+app.use(express.json());
+
+app.get("/api/health", (_request, response) => {
+  response.status(200).json({
+    status: "ok",
+    service: "bookit-api"
+  });
+});
+
+app.use((_request, response) => {
+  response.status(404).json({
+    error: {
+      message: "Route not found"
+    }
+  });
+});
