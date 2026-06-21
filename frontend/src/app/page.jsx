@@ -16,20 +16,19 @@ export default function HomePage() {
           one place.
         </p>
         <div className="hero-actions">
+          <Link className="button button-primary" href="/events">
+            Browse events
+          </Link>
+
           {!loading && !user && (
-            <>
-              <Link className="button button-primary" href="/signup">
-                Get started
-              </Link>
-              <Link className="button button-secondary" href="/login">
-                Login
-              </Link>
-            </>
+            <Link className="button button-secondary" href="/signup">
+              Create account
+            </Link>
           )}
 
           {!loading && user && (
             <>
-              <Link className="button button-primary" href="/bookings">
+              <Link className="button button-secondary" href="/bookings">
                 View my bookings
               </Link>
               {user.role === "ORGANIZER" && (

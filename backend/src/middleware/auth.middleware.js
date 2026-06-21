@@ -4,6 +4,15 @@ const { env } = require("../config/env");
 const { publicUserFields } = require("../services/auth.service");
 const { AUTH_COOKIE_NAME } = require("../utils/auth-cookie");
 
+async function findUserFromToken(token) {
+  const payload = jwt.verify(token, env.jwtSecret);
+
+  return prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: publicUserFields
+  });
+}
+
 async function authenticate(request, response, next) {
   const token = request.cookies[AUTH_COOKIE_NAME];
 
@@ -16,11 +25,7 @@ async function authenticate(request, response, next) {
   }
 
   try {
-    const payload = jwt.verify(token, env.jwtSecret);
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: publicUserFields
-    });
+    const user = await findUserFromToken(token);
 
     if (!user) {
       return response.status(401).json({
@@ -41,6 +46,23 @@ async function authenticate(request, response, next) {
   }
 }
 
+async function optionalAuthenticate(request, _response, next) {
+  const token = request.cookies[AUTH_COOKIE_NAME];
+
+  if (!token) {
+    request.user = null;
+    return next();
+  }
+
+  try {
+    request.user = await findUserFromToken(token);
+  } catch (_error) {
+    request.user = null;
+  }
+
+  return next();
+}
+
 function authorize(...allowedRoles) {
   return function checkRole(request, response, next) {
     if (!request.user || !allowedRoles.includes(request.user.role)) {
@@ -57,5 +79,6 @@ function authorize(...allowedRoles) {
 
 module.exports = {
   authenticate,
+  optionalAuthenticate,
   authorize
 };

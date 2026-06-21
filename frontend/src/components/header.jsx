@@ -36,6 +36,8 @@ export function Header() {
         </Link>
 
         <div className="nav-links">
+          <Link href="/events">Events</Link>
+
           {!loading && user && (
             <>
               <Link href="/bookings">My bookings</Link>

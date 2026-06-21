@@ -8,23 +8,35 @@ const {
   getAuthCookieOptions
 } = require("../utils/auth-cookie");
 
+function isPasswordTooLong(password) {
+  return Buffer.byteLength(password, "utf8") > 72;
+}
+
 function validateSignup(body = {}) {
   const { name, email, password, role = "user" } = body;
   const errors = [];
 
-  if (!name || name.trim().length < 2) {
+  if (typeof name !== "string" || name.trim().length < 2) {
     errors.push("Name must be at least 2 characters");
+  } else if (name.trim().length > 100) {
+    errors.push("Name cannot exceed 100 characters");
   }
 
-  if (!email || !email.includes("@")) {
+  if (
+    typeof email !== "string" ||
+    email.length > 255 ||
+    !/^\S+@\S+\.\S+$/.test(email)
+  ) {
     errors.push("A valid email is required");
   }
 
-  if (!password || password.length < 8) {
+  if (typeof password !== "string" || password.length < 8) {
     errors.push("Password must be at least 8 characters");
+  } else if (isPasswordTooLong(password)) {
+    errors.push("Password cannot exceed 72 bytes");
   }
 
-  if (!["user", "organizer"].includes(role)) {
+  if (typeof role !== "string" || !["user", "organizer"].includes(role)) {
     errors.push("Role must be user or organizer");
   }
 
@@ -34,12 +46,18 @@ function validateSignup(body = {}) {
 function validateLogin(body = {}) {
   const errors = [];
 
-  if (!body.email || !body.email.includes("@")) {
+  if (
+    typeof body.email !== "string" ||
+    body.email.length > 255 ||
+    !/^\S+@\S+\.\S+$/.test(body.email)
+  ) {
     errors.push("A valid email is required");
   }
 
-  if (!body.password) {
+  if (typeof body.password !== "string" || body.password.length === 0) {
     errors.push("Password is required");
+  } else if (isPasswordTooLong(body.password)) {
+    errors.push("Password cannot exceed 72 bytes");
   }
 
   return errors;
