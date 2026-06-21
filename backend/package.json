@@ -4,19 +4,30 @@
   "private": true,
   "scripts": {
     "dev": "node --watch src/server.js",
-    "build": "node --check src/config/env.js && node --check src/app.js && node --check src/server.js",
+    "build": "node --check src/config/env.js && node --check src/app.js && node --check src/server.js && node --check prisma/seed.js",
     "start": "node src/server.js",
-    "lint": "eslint \"src/**/*.js\"",
-    "typecheck": "npm run build"
+    "lint": "eslint \"src/**/*.js\" \"prisma/**/*.js\"",
+    "typecheck": "npm run build",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "6.19.3",
+    "bcryptjs": "3.0.2",
     "cors": "2.8.5",
     "dotenv": "16.5.0",
     "express": "4.22.2",
     "helmet": "8.1.0"
   },
   "devDependencies": {
-    "eslint": "8.57.1"
+    "eslint": "8.57.1",
+    "prisma": "6.19.3"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "engines": {
     "node": ">=24.0.0",

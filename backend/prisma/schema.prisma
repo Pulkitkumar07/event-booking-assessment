@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ORGANIZER
+
+  @@map("user_role")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+
+  @@map("booking_status")
+}
+
+enum ActivityType {
+  EVENT_VIEWED
+  BOOKING_STARTED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+
+  @@map("activity_type")
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @db.VarChar(100)
+  email        String        @unique @db.VarChar(255)
+  passwordHash String        @map("password_hash") @db.VarChar(255)
+  role         UserRole      @default(USER)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  events       Event[]
+  bookings     Booking[]
+  activities   ActivityLog[]
+
+  @@map("users")
+}
+
+model Event {
+  id          String        @id @default(uuid()) @db.Uuid
+  organizerId String        @map("organizer_id") @db.Uuid
+  title       String        @db.VarChar(200)
+  description String        @db.Text
+  venue       String        @db.VarChar(255)
+  startsAt    DateTime      @map("starts_at")
+  capacity    Int
+  price       Decimal       @db.Decimal(10, 2)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  organizer   User          @relation(fields: [organizerId], references: [id], onDelete: Restrict)
+  bookings    Booking[]
+  activities  ActivityLog[]
+
+  @@index([startsAt, id], map: "events_starts_at_id_idx")
+  @@index([organizerId, startsAt], map: "events_organizer_id_starts_at_idx")
+  @@map("events")
+}
+
+model Booking {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  eventId     String        @map("event_id") @db.Uuid
+  status      BookingStatus @default(CONFIRMED)
+  cancelledAt DateTime?     @map("cancelled_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  event       Event         @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, eventId], map: "bookings_user_id_event_id_key")
+  @@index([eventId, status], map: "bookings_event_id_status_idx")
+  @@index([userId, status], map: "bookings_user_id_status_idx")
+  @@map("bookings")
+}
+
+model ActivityLog {
+  id        BigInt       @id @default(autoincrement())
+  eventId   String       @map("event_id") @db.Uuid
+  userId    String?      @map("user_id") @db.Uuid
+  type      ActivityType
+  createdAt DateTime     @default(now()) @map("created_at")
+  event     Event        @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([eventId, type], map: "activity_log_event_id_type_idx")
+  @@index([eventId, createdAt], map: "activity_log_event_id_created_at_idx")
+  @@map("activity_log")
+}
