@@ -10,10 +10,22 @@ function getPort(value) {
   return port;
 }
 
+function getRequiredValue(name) {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+
+  return value;
+}
+
 const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: getPort(process.env.PORT),
-  frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000"
+  frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000",
+  jwtSecret: getRequiredValue("JWT_SECRET"),
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d"
 };
 
 module.exports = { env };

@@ -10,5 +10,13 @@
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "script"
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ]
   }
 }
