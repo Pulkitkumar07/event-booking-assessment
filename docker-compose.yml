@@ -4,20 +4,64 @@ services:
     container_name: bookit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: bookit
+      POSTGRES_DB: bookit-v1
       POSTGRES_USER: bookit
       POSTGRES_PASSWORD: bookit
-    ports:
-      - "5432:5432"
     volumes:
       - bookit_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U bookit -d bookit
+        - pg_isready -U bookit -d bookit-v1
       interval: 5s
       timeout: 5s
       retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: bookit-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      FRONTEND_URL: http://localhost:3000
+      DATABASE_URL: postgresql://bookit:bookit@postgres:5432/bookit-v1
+      JWT_SECRET: bookit-local-docker-secret-change-in-production
+      JWT_EXPIRES_IN: 7d
+    ports:
+      - "4100:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://localhost:4000/api/health').then(response => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4100/api
+    container_name: bookit-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:4100/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
 
 volumes:
   bookit_postgres_data:

@@ -22,6 +22,8 @@ function OrganizerDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [attendeesByEvent, setAttendeesByEvent] = useState({});
   const [loadingAttendeesId, setLoadingAttendeesId] = useState(null);
+  const [analyticsByEvent, setAnalyticsByEvent] = useState({});
+  const [loadingAnalyticsId, setLoadingAnalyticsId] = useState(null);
 
   const {
     register,
@@ -141,6 +143,35 @@ function OrganizerDashboard() {
       );
     } finally {
       setLoadingAttendeesId(null);
+    }
+  }
+
+  async function toggleAnalytics(eventId) {
+    if (analyticsByEvent[eventId]) {
+      setAnalyticsByEvent((current) => {
+        const next = { ...current };
+        delete next[eventId];
+        return next;
+      });
+      return;
+    }
+
+    setLoadingAnalyticsId(eventId);
+
+    try {
+      const response = await api.get(
+        `/organizer/events/${eventId}/analytics`
+      );
+      setAnalyticsByEvent((current) => ({
+        ...current,
+        [eventId]: response.data.analytics
+      }));
+    } catch (requestError) {
+      setPageError(
+        getApiErrorMessage(requestError, "Unable to load analytics")
+      );
+    } finally {
+      setLoadingAnalyticsId(null);
     }
   }
 
@@ -314,6 +345,7 @@ function OrganizerDashboard() {
           <div className="organizer-event-list">
             {events.map((event) => {
               const attendees = attendeesByEvent[event.id];
+              const analytics = analyticsByEvent[event.id];
 
               return (
                 <article className="organizer-event-card" key={event.id}>
@@ -358,7 +390,40 @@ function OrganizerDashboard() {
                           ? "Hide attendees"
                           : "View attendees"}
                     </button>
+                    <button
+                      className="button button-secondary button-small"
+                      disabled={loadingAnalyticsId === event.id}
+                      onClick={() => toggleAnalytics(event.id)}
+                      type="button"
+                    >
+                      {loadingAnalyticsId === event.id
+                        ? "Loading..."
+                        : analytics
+                          ? "Hide analytics"
+                          : "View analytics"}
+                    </button>
                   </div>
+
+                  {analytics && (
+                    <div className="analytics-panel">
+                      <div className="analytics-metric">
+                        <span>Views</span>
+                        <strong>{analytics.views}</strong>
+                      </div>
+                      <div className="analytics-metric">
+                        <span>Bookings started</span>
+                        <strong>{analytics.bookingsStarted}</strong>
+                      </div>
+                      <div className="analytics-metric">
+                        <span>Bookings confirmed</span>
+                        <strong>{analytics.bookingsConfirmed}</strong>
+                      </div>
+                      <div className="analytics-metric">
+                        <span>View to booking</span>
+                        <strong>{analytics.conversionRate}%</strong>
+                      </div>
+                    </div>
+                  )}
 
                   {attendees && (
                     <div className="attendee-panel">

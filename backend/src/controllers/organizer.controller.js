@@ -1,5 +1,6 @@
 const {
   createOrganizerEvent,
+  getEventAnalytics,
   listEventAttendees,
   listOrganizerEvents,
   updateOrganizerEvent
@@ -177,8 +178,23 @@ async function getAttendees(request, response, next) {
   }
 }
 
+async function getAnalytics(request, response, next) {
+  try {
+    validateEventId(request.params.id);
+    const result = await getEventAnalytics(
+      request.user.id,
+      request.params.id
+    );
+
+    return response.status(200).json(result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   createEvent,
+  getAnalytics,
   getAttendees,
   getOrganizerEvents,
   updateEvent

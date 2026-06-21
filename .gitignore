@@ -10,7 +10,3 @@ coverage/
 
 *.log
 .DS_Store
-
-# Not to push
-*.md
-postman

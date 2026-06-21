@@ -1,4 +1,4 @@
-const { BookingStatus } = require("@prisma/client");
+const { ActivityType, BookingStatus } = require("@prisma/client");
 const { prisma } = require("../config/database");
 
 function notFoundError() {
@@ -161,8 +161,65 @@ async function listEventAttendees(organizerId, eventId) {
   };
 }
 
+async function getEventAnalytics(organizerId, eventId) {
+  const event = await prisma.event.findFirst({
+    where: {
+      id: eventId,
+      organizerId
+    },
+    select: {
+      id: true,
+      title: true
+    }
+  });
+
+  if (!event) {
+    throw notFoundError();
+  }
+
+  const activityCounts = await prisma.activityLog.groupBy({
+    by: ["type"],
+    where: {
+      eventId,
+      type: {
+        in: [
+          ActivityType.EVENT_VIEWED,
+          ActivityType.BOOKING_STARTED,
+          ActivityType.BOOKING_CONFIRMED
+        ]
+      }
+    },
+    _count: {
+      _all: true
+    }
+  });
+
+  const counts = Object.fromEntries(
+    activityCounts.map((activity) => [
+      activity.type,
+      activity._count._all
+    ])
+  );
+  const views = counts[ActivityType.EVENT_VIEWED] ?? 0;
+  const bookingsStarted = counts[ActivityType.BOOKING_STARTED] ?? 0;
+  const bookingsConfirmed = counts[ActivityType.BOOKING_CONFIRMED] ?? 0;
+  const conversionRate =
+    views === 0 ? 0 : Number(((bookingsConfirmed / views) * 100).toFixed(2));
+
+  return {
+    event,
+    analytics: {
+      views,
+      bookingsStarted,
+      bookingsConfirmed,
+      conversionRate
+    }
+  };
+}
+
 module.exports = {
   createOrganizerEvent,
+  getEventAnalytics,
   listEventAttendees,
   listOrganizerEvents,
   updateOrganizerEvent

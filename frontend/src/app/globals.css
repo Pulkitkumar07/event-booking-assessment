@@ -786,6 +786,34 @@ h1 {
   grid-column: 1 / -1;
 }
 
+.analytics-panel {
+  display: grid;
+  padding-top: 20px;
+  border-top: 1px solid #e3e7ef;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analytics-metric {
+  display: grid;
+  padding: 16px;
+  border-radius: 11px;
+  gap: 8px;
+  background: #ffffff;
+}
+
+.analytics-metric span {
+  color: #657087;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.analytics-metric strong {
+  color: #172033;
+  font-size: 1.45rem;
+}
+
 .attendee-panel h4,
 .attendee-panel p {
   margin: 0;
@@ -853,8 +881,16 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .analytics-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .organizer-event-actions {
     justify-content: flex-start;
+  }
+
+  .analytics-panel {
+    grid-template-columns: 1fr;
   }
 }
 
