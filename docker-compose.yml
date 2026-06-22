@@ -4,7 +4,7 @@ services:
     container_name: bookit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: bookit-v1
+      POSTGRES_DB: bookit
       POSTGRES_USER: bookit
       POSTGRES_PASSWORD: bookit
     volumes:
@@ -12,7 +12,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U bookit -d bookit-v1
+        - pg_isready -U bookit -d bookit
       interval: 5s
       timeout: 5s
       retries: 10
@@ -27,7 +27,7 @@ services:
       NODE_ENV: development
       PORT: 4000
       FRONTEND_URL: http://localhost:3000
-      DATABASE_URL: postgresql://bookit:bookit@postgres:5432/bookit-v1
+      DATABASE_URL: postgresql://bookit:bookit@postgres:5432/bookit
       JWT_SECRET: bookit-local-docker-secret-change-in-production
       JWT_EXPIRES_IN: 7d
     ports:

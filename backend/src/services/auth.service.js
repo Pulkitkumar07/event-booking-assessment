@@ -74,14 +74,7 @@ async function verifyUser(email, password) {
 }
 
 function createToken(user) {
-  return jwt.sign(
-    {
-      userId: user.id
-    },
-    env.jwtSecret,
-    {
-      expiresIn: env.jwtExpiresIn
-    }
+  return jwt.sign({userId: user.id},env.jwtSecret,{expiresIn: env.jwtExpiresIn}
   );
 }
 
