@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node --watch src/server.js",
-    "build": "node --check src/config/env.js && node --check src/config/database.js && node --check src/utils/auth-cookie.js && node --check src/services/auth.service.js && node --check src/services/event.service.js && node --check src/services/booking.service.js && node --check src/services/organizer.service.js && node --check src/controllers/auth.controller.js && node --check src/controllers/event.controller.js && node --check src/controllers/booking.controller.js && node --check src/controllers/organizer.controller.js && node --check src/middleware/auth.middleware.js && node --check src/middleware/error.middleware.js && node --check src/routes/auth.routes.js && node --check src/routes/event.routes.js && node --check src/routes/booking.routes.js && node --check src/routes/organizer.routes.js && node --check src/app.js && node --check src/server.js && node --check prisma/seed.js",
+    "build": "node --check src/config/env.js && node --check src/config/database.js && node --check src/utils/auth-cookie.js && node --check src/services/auth.service.js && node --check src/services/event.service.js && node --check src/services/booking.service.js && node --check src/services/organizer.service.js && node --check src/controllers/auth.controller.js && node --check src/controllers/event.controller.js && node --check src/controllers/booking.controller.js && node --check src/controllers/organizer.controller.js && node --check src/middleware/auth.middleware.js && node --check src/middleware/error.middleware.js && node --check src/middleware/rate-limit.middleware.js && node --check src/routes/auth.routes.js && node --check src/routes/event.routes.js && node --check src/routes/booking.routes.js && node --check src/routes/organizer.routes.js && node --check src/app.js && node --check src/server.js && node --check prisma/seed.js",
     "start": "node src/server.js",
     "lint": "eslint \"src/**/*.js\" \"prisma/**/*.js\"",
     "prisma:generate": "prisma generate",
@@ -20,6 +20,7 @@
     "cors": "2.8.5",
     "dotenv": "16.5.0",
     "express": "4.22.2",
+    "express-rate-limit": "^8.5.2",
     "helmet": "8.1.0",
     "jsonwebtoken": "^9.0.2"
   },
